@@ -16,18 +16,22 @@ class PaintApp:
         self.select_button = tk.Button(root, text="Select", command=self.activate_select)
         self.select_button.pack(side=tk.LEFT)
 
-        self.line_button = tk.Button(root, text="Draw DDA", command=lambda: self.activate_draw(0))
-        self.line_button.pack(side=tk.LEFT)
+        self.dda_button = tk.Button(root, text="Draw DDA", command=lambda: self.activate_draw(0))
+        self.dda_button.pack(side=tk.LEFT)
 
-        self.line_button = tk.Button(root, text="Draw Bres", command=lambda: self.activate_draw(1))
-        self.line_button.pack(side=tk.LEFT)
+        self.bres_button = tk.Button(root, text="Draw Bres", command=lambda: self.activate_draw(1))
+        self.bres_button.pack(side=tk.LEFT)
 
-        self.line_button = tk.Button(root, text="Draw Circ", command=lambda: self.activate_draw(2))
+        self.circ_bres_button = tk.Button(root, text="Draw Circ", command=lambda: self.activate_draw(2))
+        self.circ_bres_button.pack(side=tk.LEFT)
 
-        self.line_button = tk.Button(root, text="Cohen-Sutherland", command=self.activate_recorte)
+        self.cohen_button = tk.Button(root, text="Cohen-Sutherland", command=lambda: self.activate_recorte(0))
+        self.cohen_button.pack(side=tk.LEFT)
+
+        self.liang_button = tk.Button(root, text="Liang-Barsky", command=lambda: self.activate_recorte(1))
+        self.liang_button.pack(side=tk.LEFT)
 
 
-        self.line_button.pack(side=tk.LEFT)
 
         self.rect = None
         self.line = None
@@ -53,10 +57,16 @@ class PaintApp:
 
     def activate_recorte(self, recorte_mode=0):
         rec = Recorte(xmin=self.select_area[0], ymin=self.select_area[1], xmax=self.select_area[2], ymax=self.select_area[3])
-        self.canvas.delete("all") 
+        self.canvas.delete("all")
+        if recorte_mode == 0:
+            print("cohen_sutherland")
+            foo = rec.cohen_sutherland
+        else:
+            print("liang_barsky")
+            foo = rec.liang_barsky
         for p in self.points:
             rec.cohen_sutherland(self.canvas, p[0], p[1], p[2], p[3])
-
+            #foo(self, p[0], p[1], p[2], p[3])
     def on_button_press(self, event):
 
         if self.mode == 'select':

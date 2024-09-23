@@ -63,3 +63,40 @@ class Recorte:
                     y2=yint
             if aceite:
                 draw.dda(canvas, round(x1), round(y1), round(x2), round(y2))
+
+
+    def clip_test(self, p, q, u1, u2):
+        result = True
+        if p < 0.0:
+            r=q/p
+            if r > u2:
+                result = False
+            elif r > u1:
+                u1=r
+        elif p>0.0:
+            r = q/p
+            if r<u1:
+                result = False
+            elif r < u2:
+                u2 = r
+        elif q<0.0:
+            result = False
+        return result
+    
+    def liang_barsky(self, x1, y1, x2, y2):
+        u1 = 0.0
+        u2 = 1.0
+        dx = x2-x1
+        dy = y2-y1
+
+        if self.clip_test(self, -dx, x1 - self.xmin, u1, u2):
+            if self.clip_test(dx, self.xmax - x1, u1, u2):
+                if self.clip_test(-dy, y1 - self.ymin, u1, u2):
+                    if self.clip_test(dy, self.ymax - y1, u1, u2):
+                        if u2<1.0:
+                            x2 = x1 +u2*dx
+                            y2 = y1 +u2*dy
+                        if u1>0.0:
+                            x1=x1+u1*dx
+                            y1=y1+u1*dy
+                        draw.dda(round(x1), round(y1), round(x2), round(y2))
