@@ -1,11 +1,14 @@
 import tkinter as tk
 
 import draw
+from recorte import Recorte
 
 class PaintApp:
     def __init__(self, root):
+        self.points = [] #lista contendo todos os pontos
         self.root = root
         self.draw_mode = 0
+        self.select_area = (0, 0, 0, 0) # x1, y1, x2, y2
         self.root.title("Paint App")
         self.canvas = tk.Canvas(root, bg="white", width=600, height=400)
         self.canvas.pack(fill=tk.BOTH, expand=True)
@@ -20,6 +23,10 @@ class PaintApp:
         self.line_button.pack(side=tk.LEFT)
 
         self.line_button = tk.Button(root, text="Draw Circ", command=lambda: self.activate_draw(2))
+
+        self.line_button = tk.Button(root, text="Cohen-Sutherland", command=self.activate_recorte)
+
+
         self.line_button.pack(side=tk.LEFT)
 
         self.rect = None
@@ -44,15 +51,19 @@ class PaintApp:
         self.draw_mode = draw_mode
         self.line_click_count = 0  # Reset click count when activating line mode
 
+    def activate_recorte(self, recorte_mode=0):
+        rec = Recorte(xmin=self.select_area[0], ymin=self.select_area[1], xmax=self.select_area[2], ymax=self.select_area[3])
+        self.canvas.delete("all") 
+        for p in self.points:
+            rec.cohen_sutherland(self.canvas, p[0], p[1], p[2], p[3])
+
     def on_button_press(self, event):
 
         if self.mode == 'select':
-             # If there's already a rectangle, remove it
             self.start_x = event.x
             self.start_y = event.y
             if self.rect:
                 self.canvas.delete(self.rect)
-
             # Create a new rectangle that will be updated as the user drags
             self.rect = self.canvas.create_rectangle(self.start_x, self.start_y, self.start_x, self.start_y, outline="blue", width=2)
         elif self.mode == 'line':
@@ -65,6 +76,7 @@ class PaintApp:
                 # Second click, store the end point and draw the line
                 self.end_x = event.x
                 self.end_y = event.y
+                self.points.append( (self.start_x, self.start_y, self.end_x, self.end_y) )
                 if self.draw_mode == 0:
                     draw.dda(self.canvas, self.start_x, self.start_y, self.end_x, self.end_y)
                 elif self.draw_mode == 1:
@@ -92,7 +104,7 @@ class PaintApp:
             end_x, end_y = event.x, event.y
             # Log the coordinates of the selected area
             print(f"Selected area: ({self.start_x}, {self.start_y}) to ({end_x}, {end_y})")
-            # You can perform any action you need here, like selecting or modifying objects within the selected area.
+            self.select_area = (self.start_x, self.start_y, end_x, end_y)
 
 if __name__ == "__main__":
     root = tk.Tk()
