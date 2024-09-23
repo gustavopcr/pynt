@@ -67,6 +67,9 @@ class PaintApp:
         for p in self.points:
             #rec.cohen_sutherland(self.canvas, p[0], p[1], p[2], p[3])
             foo(self.canvas, p[0], p[1], p[2], p[3])
+        self.points = rec.points
+        rec.points = []
+        
     def on_button_press(self, event):
 
         if self.mode == 'select':
@@ -98,7 +101,7 @@ class PaintApp:
                 # After drawing the line, reset start point for the next line
                 self.start_x = self.end_x
                 self.start_y = self.end_y
-                self.line_click_count = 1  # Stay at 1 for the next line
+                self.line_click_count = 0
 
 
     def on_mouse_drag(self, event):

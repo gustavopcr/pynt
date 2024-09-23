@@ -1,9 +1,10 @@
 import draw
 
 class Recorte:
-
+    
     def __init__(self, xmin, xmax, ymin, ymax):
         # Initialize with boundaries for the clipping window
+        self.points = [] #lista contendo todos os pontos apos recorte
         self.xmin = xmin
         self.xmax = xmax
         self.ymin = ymin
@@ -63,6 +64,8 @@ class Recorte:
                     y2=yint
             if aceite:
                 draw.dda(canvas, round(x1), round(y1), round(x2), round(y2))
+                self.points.append( (round(x1), round(y1), round(x2), round(y2)) )
+
 
 
     def clip_test(self, p, q, u1, u2):
@@ -109,3 +112,5 @@ class Recorte:
 
                         # Draw the clipped line
                         draw.dda(canvas, round(x1), round(y1), round(x2), round(y2))
+                        self.points.append( (round(x1), round(y1), round(x2), round(y2)) )
+
