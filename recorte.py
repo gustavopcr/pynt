@@ -34,7 +34,7 @@ class Recorte:
             if c1 == 0 and c2 == 0:
                 aceite = True
                 feito = True
-            elif c1 != 0 and c2 !=0:
+            elif c1 & c2 !=0:
                 feito = True
             else:
                 if c1 != 0:
@@ -81,22 +81,31 @@ class Recorte:
                 u2 = r
         elif q<0.0:
             result = False
-        return result
+        return result, u1, u2
     
-    def liang_barsky(self, x1, y1, x2, y2):
+    def liang_barsky(self, canvas, x1, y1, x2, y2):
         u1 = 0.0
         u2 = 1.0
         dx = x2-x1
         dy = y2-y1
 
-        if self.clip_test(self, -dx, x1 - self.xmin, u1, u2):
-            if self.clip_test(dx, self.xmax - x1, u1, u2):
-                if self.clip_test(-dy, y1 - self.ymin, u1, u2):
-                    if self.clip_test(dy, self.ymax - y1, u1, u2):
-                        if u2<1.0:
-                            x2 = x1 +u2*dx
-                            y2 = y1 +u2*dy
-                        if u1>0.0:
-                            x1=x1+u1*dx
-                            y1=y1+u1*dy
-                        draw.dda(round(x1), round(y1), round(x2), round(y2))
+        result, u1, u2 = self.clip_test(-dx, x1 - self.xmin, u1, u2)
+       # Perform the clipping tests
+        result, u1, u2 = self.clip_test(-dx, x1 - self.xmin, u1, u2)
+        if result:
+            result, u1, u2 = self.clip_test(dx, self.xmax - x1, u1, u2)
+            if result:
+                result, u1, u2 = self.clip_test(-dy, y1 - self.ymin, u1, u2)
+                if result:
+                    result, u1, u2 = self.clip_test(dy, self.ymax - y1, u1, u2)
+                    if result:
+                        # Update the endpoints
+                        if u2 < 1.0:
+                            x2 = x1 + u2 * dx
+                            y2 = y1 + u2 * dy
+                        if u1 > 0.0:
+                            x1 = x1 + u1 * dx
+                            y1 = y1 + u1 * dy
+
+                        # Draw the clipped line
+                        draw.dda(canvas, round(x1), round(y1), round(x2), round(y2))

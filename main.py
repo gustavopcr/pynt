@@ -65,8 +65,8 @@ class PaintApp:
             print("liang_barsky")
             foo = rec.liang_barsky
         for p in self.points:
-            rec.cohen_sutherland(self.canvas, p[0], p[1], p[2], p[3])
-            #foo(self, p[0], p[1], p[2], p[3])
+            #rec.cohen_sutherland(self.canvas, p[0], p[1], p[2], p[3])
+            foo(self.canvas, p[0], p[1], p[2], p[3])
     def on_button_press(self, event):
 
         if self.mode == 'select':
