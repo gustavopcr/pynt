@@ -5,15 +5,21 @@ import draw
 class PaintApp:
     def __init__(self, root):
         self.root = root
+        self.draw_mode = 0
         self.root.title("Paint App")
-
         self.canvas = tk.Canvas(root, bg="white", width=600, height=400)
         self.canvas.pack(fill=tk.BOTH, expand=True)
 
         self.select_button = tk.Button(root, text="Select", command=self.activate_select)
         self.select_button.pack(side=tk.LEFT)
 
-        self.line_button = tk.Button(root, text="Draw Line", command=self.activate_line)
+        self.line_button = tk.Button(root, text="Draw DDA", command=lambda: self.activate_draw(0))
+        self.line_button.pack(side=tk.LEFT)
+
+        self.line_button = tk.Button(root, text="Draw Bres", command=lambda: self.activate_draw(1))
+        self.line_button.pack(side=tk.LEFT)
+
+        self.line_button = tk.Button(root, text="Draw Circ", command=lambda: self.activate_draw(2))
         self.line_button.pack(side=tk.LEFT)
 
         self.rect = None
@@ -30,8 +36,9 @@ class PaintApp:
     def activate_select(self):
         self.mode = 'select'
 
-    def activate_line(self):
+    def activate_draw(self, draw_mode):
         self.mode = 'line'
+        self.draw_mode = draw_mode
         self.line_click_count = 0  # Reset click count when activating line mode
 
     def on_button_press(self, event):
@@ -45,7 +52,14 @@ class PaintApp:
                 # Second click, store the end point and draw the line
                 self.end_x = event.x
                 self.end_y = event.y
-                draw.dda(self.canvas, self.start_x, self.start_y, self.end_x, self.end_y)
+                if self.draw_mode == 0:
+                    draw.dda(self.canvas, self.start_x, self.start_y, self.end_x, self.end_y)
+                elif self.draw_mode == 1:
+                    draw.dda(self.canvas, self.start_x, self.start_y, self.end_x, self.end_y)
+                elif self.draw_mode == 2:
+                    draw.circ_bresenhams(self.canvas, self.end_x, self.end_y, 10)
+                    #draw.dda(self.canvas, self.start_x, self.start_y, self.end_x, self.end_y)
+
                 #draw_dda_line(self.start_x, self.start_y, self.end_x, self.end_y)
                 # After drawing the line, reset start point for the next line
                 self.start_x = self.end_x
