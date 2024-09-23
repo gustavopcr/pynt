@@ -50,7 +50,7 @@ class PaintApp:
             print(f"Selected region: ({self.start_x}, {self.start_y}) to ({event.x}, {event.y})")
             self.canvas.delete(self.rect)
         elif self.mode == 'line':
-            print(f"Drew line from ({self.start_x}, {self.start_y}) to ({event.x}, {event.y})")
+            print(f"Drew line from: ({self.start_x}, {self.start_y}) to ({event.x}, {event.y})")
 
 if __name__ == "__main__":
     root = tk.Tk()
