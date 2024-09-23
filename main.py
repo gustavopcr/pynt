@@ -2,7 +2,7 @@ import tkinter as tk
 
 import draw
 from recorte import Recorte
-
+from transformacao import Transformacao
 class PaintApp:
     def __init__(self, root):
         self.points = [] #lista contendo todos os pontos
@@ -16,17 +16,17 @@ class PaintApp:
         self.select_button = tk.Button(root, text="Select", command=self.activate_select)
         self.select_button.pack(side=tk.LEFT)
         
-        self.translacao_button = tk.Button(root, text="Translação", command=self.activate_select)
+        self.translacao_button = tk.Button(root, text="Translação", command=lambda: self.activate_transformacao(0))
         self.translacao_button.pack(side=tk.LEFT)
 
-        self.rotacao_button = tk.Button(root, text="Rotação", command=self.activate_select)
+        self.rotacao_button = tk.Button(root, text="Rotação", command=lambda: self.activate_transformacao(1))
         self.rotacao_button.pack(side=tk.LEFT)
 
 
-        self.escala_button = tk.Button(root, text="Escala", command=self.activate_select)
+        self.escala_button = tk.Button(root, text="Escala", command=lambda: self.activate_transformacao(2))
         self.escala_button.pack(side=tk.LEFT)
 
-        self.reflexao_button = tk.Button(root, text="Reflexão", command=self.activate_select)
+        self.reflexao_button = tk.Button(root, text="Reflexão", command=lambda: self.activate_transformacao(3))
         self.reflexao_button.pack(side=tk.LEFT)
 
         self.dda_button = tk.Button(root, text="DDA", command=lambda: self.activate_draw(0))
@@ -80,6 +80,26 @@ class PaintApp:
         self.points = rec.points #atualiza pontos para refletir no recorte
         rec.points = [] #reseta lista de pontos do recorte para futuras iteracoes
 
+    def activate_transformacao(self, transformacao_mode=0):
+        t = Transformacao(xmin=self.select_area[0], ymin=self.select_area[1], xmax=self.select_area[2], ymax=self.select_area[3])
+        if transformacao_mode == 0: # translacao
+            for i in range(len(self.points)):
+                self.points[i] = t.translate(self.points[i], 10, 10) #10 e 10 -> dx e dy
+        elif transformacao_mode == 1: # translacao
+            for i in range(len(self.points)):
+                self.points[i] = t.rotate(self.points[i], 30) #30 -> angulo
+        elif transformacao_mode == 2: # translacao
+            for i in range(len(self.points)):
+                self.points[i] = t.scale(self.points[i], 2, 2)
+        else:
+            for i in range(len(self.points)):
+                self.points[i] = t.reflect_xy(self.points[i])
+        self.canvas.delete("all")
+        for p in self.points:
+            draw.dda(self.canvas, p[0], p[1], p[2], p[3])
+
+
+        #redraw
     def on_button_press(self, event):
         if self.mode == 'select':
             self.start_x = event.x

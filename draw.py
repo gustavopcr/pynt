@@ -13,7 +13,7 @@ def plot_circle_points(canvas, xc, yc, x, y):
     draw_point(canvas, xc-y, yc-x)
 
 def dda(canvas, x1, y1, x2, y2):
-    dx = dy = passos = 0
+    passos = 0
     x_incr = y_incr = x = y = 0.0
 
     dx = x2-x1
@@ -29,7 +29,7 @@ def dda(canvas, x1, y1, x2, y2):
     x = x1
     y = y1
     draw_point(canvas, round(x), round(y))
-    for k in range(passos + 1):
+    for k in range(round(passos) + 1):
         x = x + x_incr
         y = y + y_incr
         draw_point(canvas, round(x), round(y))

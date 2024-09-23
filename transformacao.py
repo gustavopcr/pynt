@@ -16,8 +16,7 @@ class Transformacao:
         x1, y1, x2, y2 = p
         new_x1, new_y1 = x1 + dx, y1 + dy
         new_x2, new_y2 = x2 + dx, y2 + dy
-        draw.dda(self.canvas, new_x1, new_y1, new_x2, new_y2)
-        self.points.append(new_x1, new_y1, new_x2, new_y2)
+        return (new_x1, new_y1, new_x2, new_y2)
 
     # Transformação de rotação
     def rotate(self, p, angle_degrees):
@@ -27,16 +26,14 @@ class Transformacao:
         new_y1 = x1 * math.sin(angle_radians) + y1 * math.cos(angle_radians)
         new_x2 = x2 * math.cos(angle_radians) - y2 * math.sin(angle_radians)
         new_y2 = x2 * math.sin(angle_radians) + y2 * math.cos(angle_radians)
-        draw.dda(self.canvas, new_x1, new_y1, new_x2, new_y2)
-        self.points.append(new_x1, new_y1, new_x2, new_y2)
-
+        return (new_x1, new_y1, new_x2, new_y2)
+    
     # Transformação de escala
     def scale(self, p, sx, sy):
         x1, y1, x2, y2 = p
         new_x1, new_y1 = x1 * sx, y1 * sy
         new_x2, new_y2 = x2 * sx, y2 * sy
-        draw.dda(self.canvas, new_x1, new_y1, new_x2, new_y2)
-        self.points.append(new_x1, new_y1, new_x2, new_y2)
+        return (new_x1, new_y1, new_x2, new_y2)
 
 
     # Reflexão nos eixos X, Y ou XY
@@ -44,20 +41,17 @@ class Transformacao:
         x1, y1, x2, y2 = p
         new_y1 = -y1
         new_y2 = -y2
-        draw.dda(self.canvas, x1, new_y1, x2, new_y2)
-        self.points.append(x1, new_y1, x2, new_y2)
+        return (x1, new_y1, x2, new_y2)
 
     def reflect_y(self, p):
         x1, y1, x2, y2 = p
         new_x1 = -x1
         new_x2 = -x2
-        draw.dda(self.canvas, new_x1, y1, new_x2, y2)
-        self.points.append(new_x1, y1, new_x2, y2)
+        return (new_x1, y1, new_x2, y2)
 
     def reflect_xy(self, p):
         x1, y1, x2, y2 = p
         new_x1, new_y1 = -x1, -y1
         new_x2, new_y2 = -x2, -y2
-        draw.dda(self.canvas, new_x1, new_y1, new_x2, new_y2)
-        self.points.append(new_x1, new_y1, new_x2, new_y2)
+        return (new_x1, new_y1, new_x2, new_y2)
 
