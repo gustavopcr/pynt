@@ -1,5 +1,7 @@
 import tkinter as tk
 
+import draw
+
 class PaintApp:
     def __init__(self, root):
         self.root = root
@@ -18,39 +20,37 @@ class PaintApp:
         self.line = None
         self.start_x = None
         self.start_y = None
+        self.end_x = None
+        self.end_y = None
         self.mode = None  # 'select' or 'line'
+        self.line_click_count = 0  # Track the number of clicks for drawing the line
 
         self.canvas.bind("<Button-1>", self.on_button_press)
-        self.canvas.bind("<B1-Motion>", self.on_mouse_drag)
-        self.canvas.bind("<ButtonRelease-1>", self.on_button_release)
 
     def activate_select(self):
         self.mode = 'select'
 
     def activate_line(self):
         self.mode = 'line'
+        self.line_click_count = 0  # Reset click count when activating line mode
 
     def on_button_press(self, event):
-        self.start_x = event.x
-        self.start_y = event.y
-
-        if self.mode == 'select':
-            self.rect = self.canvas.create_rectangle(self.start_x, self.start_y, self.start_x, self.start_y, outline="blue", width=2)
-        elif self.mode == 'line':
-            self.line = self.canvas.create_line(self.start_x, self.start_y, self.start_x, self.start_y, fill="red", width=2)
-
-    def on_mouse_drag(self, event):
-        if self.mode == 'select' and self.rect:
-            self.canvas.coords(self.rect, self.start_x, self.start_y, event.x, event.y)
-        elif self.mode == 'line' and self.line:
-            self.canvas.coords(self.line, self.start_x, self.start_y, event.x, event.y)
-
-    def on_button_release(self, event):
-        if self.mode == 'select':
-            print(f"Selected region: ({self.start_x}, {self.start_y}) to ({event.x}, {event.y})")
-            self.canvas.delete(self.rect)
-        elif self.mode == 'line':
-            print(f"Drew line from: ({self.start_x}, {self.start_y}) to ({event.x}, {event.y})")
+        if self.mode == 'line':
+            if self.line_click_count == 0:
+                # First click, store the start point
+                self.start_x = event.x
+                self.start_y = event.y
+                self.line_click_count = 1
+            elif self.line_click_count == 1:
+                # Second click, store the end point and draw the line
+                self.end_x = event.x
+                self.end_y = event.y
+                draw.dda(self.canvas, self.start_x, self.start_y, self.end_x, self.end_y)
+                #draw_dda_line(self.start_x, self.start_y, self.end_x, self.end_y)
+                # After drawing the line, reset start point for the next line
+                self.start_x = self.end_x
+                self.start_y = self.end_y
+                self.line_click_count = 1  # Stay at 1 for the next line
 
 if __name__ == "__main__":
     root = tk.Tk()
