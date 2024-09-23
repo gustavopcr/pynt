@@ -15,14 +15,27 @@ class PaintApp:
 
         self.select_button = tk.Button(root, text="Select", command=self.activate_select)
         self.select_button.pack(side=tk.LEFT)
+        
+        self.translacao_button = tk.Button(root, text="Translação", command=self.activate_select)
+        self.translacao_button.pack(side=tk.LEFT)
 
-        self.dda_button = tk.Button(root, text="Draw DDA", command=lambda: self.activate_draw(0))
+        self.rotacao_button = tk.Button(root, text="Rotação", command=self.activate_select)
+        self.rotacao_button.pack(side=tk.LEFT)
+
+
+        self.escala_button = tk.Button(root, text="Escala", command=self.activate_select)
+        self.escala_button.pack(side=tk.LEFT)
+
+        self.reflexao_button = tk.Button(root, text="Reflexão", command=self.activate_select)
+        self.reflexao_button.pack(side=tk.LEFT)
+
+        self.dda_button = tk.Button(root, text="DDA", command=lambda: self.activate_draw(0))
         self.dda_button.pack(side=tk.LEFT)
 
-        self.bres_button = tk.Button(root, text="Draw Bres", command=lambda: self.activate_draw(1))
+        self.bres_button = tk.Button(root, text="Bresenham", command=lambda: self.activate_draw(1))
         self.bres_button.pack(side=tk.LEFT)
 
-        self.circ_bres_button = tk.Button(root, text="Draw Circ", command=lambda: self.activate_draw(2))
+        self.circ_bres_button = tk.Button(root, text="Circulo Bresenham", command=lambda: self.activate_draw(2))
         self.circ_bres_button.pack(side=tk.LEFT)
 
         self.cohen_button = tk.Button(root, text="Cohen-Sutherland", command=lambda: self.activate_recorte(0))
@@ -59,49 +72,39 @@ class PaintApp:
         rec = Recorte(xmin=self.select_area[0], ymin=self.select_area[1], xmax=self.select_area[2], ymax=self.select_area[3])
         self.canvas.delete("all")
         if recorte_mode == 0:
-            print("cohen_sutherland")
             foo = rec.cohen_sutherland
         else:
-            print("liang_barsky")
             foo = rec.liang_barsky
         for p in self.points:
-            #rec.cohen_sutherland(self.canvas, p[0], p[1], p[2], p[3])
             foo(self.canvas, p[0], p[1], p[2], p[3])
-        self.points = rec.points
-        rec.points = []
-        
-    def on_button_press(self, event):
+        self.points = rec.points #atualiza pontos para refletir no recorte
+        rec.points = [] #reseta lista de pontos do recorte para futuras iteracoes
 
+    def on_button_press(self, event):
         if self.mode == 'select':
             self.start_x = event.x
             self.start_y = event.y
             if self.rect:
-                self.canvas.delete(self.rect)
-            # Create a new rectangle that will be updated as the user drags
+                self.canvas.delete(self.rect) #se rect ja existe, apaga
             self.rect = self.canvas.create_rectangle(self.start_x, self.start_y, self.start_x, self.start_y, outline="blue", width=2)
         elif self.mode == 'line':
             if self.line_click_count == 0:
-                # First click, store the start point
                 self.start_x = event.x
                 self.start_y = event.y
                 self.line_click_count = 1
             elif self.line_click_count == 1:
-                # Second click, store the end point and draw the line
                 self.end_x = event.x
                 self.end_y = event.y
                 self.points.append( (self.start_x, self.start_y, self.end_x, self.end_y) )
                 if self.draw_mode == 0:
                     draw.dda(self.canvas, self.start_x, self.start_y, self.end_x, self.end_y)
                 elif self.draw_mode == 1:
-                    draw.dda(self.canvas, self.start_x, self.start_y, self.end_x, self.end_y)
+                    draw.bresenham(self.canvas, self.start_x, self.start_y, self.end_x, self.end_y)
                 elif self.draw_mode == 2:
                     draw.circ_bresenhams(self.canvas, self.end_x, self.end_y, 10)
-                    #draw.dda(self.canvas, self.start_x, self.start_y, self.end_x, self.end_y)
-                #draw_dda_line(self.start_x, self.start_y, self.end_x, self.end_y)
-                # After drawing the line, reset start point for the next line
                 self.start_x = self.end_x
                 self.start_y = self.end_y
-                self.line_click_count = 0
+                self.line_click_count = 0 # reseta contagem de pontos
 
 
     def on_mouse_drag(self, event):
