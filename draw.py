@@ -13,7 +13,7 @@ def plot_circle_points(canvas, xc, yc, x, y):
     draw_point(canvas, xc-y, yc-x)
 
 def dda(canvas, x1, y1, x2, y2):
-    dx = dy = passos = k = 0
+    dx = dy = passos = 0
     x_incr = y_incr = x = y = 0.0
 
     dx = x2-x1
@@ -35,7 +35,6 @@ def dda(canvas, x1, y1, x2, y2):
         draw_point(canvas, round(x), round(y))
 
 def bresenham(canvas, x1, y1, x2, y2):
-    dx, dy, x, y, const1, const2, p, incr_x, incr_y = 0
     dx = x2-x1
     dy = y2-y1
     if dx >= 0:
