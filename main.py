@@ -12,6 +12,13 @@ class PaintApp:
         self.root.title("Paint App")
         self.canvas = tk.Canvas(root, bg="white", width=600, height=400)
         self.canvas.pack(fill=tk.BOTH, expand=True)
+        self.configs = Transformacao(0, 0, 0, 0, 0, 0)
+
+        # Botão para abrir a janela de configuração
+        self.config_button = tk.Button(root, text="Configurar Transformações", command=self.create_config_window)
+        self.config_button.pack(pady=20)
+
+
 
         self.select_button = tk.Button(root, text="Select", command=self.activate_select)
         self.select_button.pack(side=tk.LEFT)
@@ -81,19 +88,27 @@ class PaintApp:
         rec.points = [] #reseta lista de pontos do recorte para futuras iteracoes
 
     def activate_transformacao(self, transformacao_mode=0):
-        t = Transformacao(xmin=self.select_area[0], ymin=self.select_area[1], xmax=self.select_area[2], ymax=self.select_area[3])
+        t = Transformacao(self.configs.dx, self.configs.dy, self.configs.angle_degrees, self.configs.sx, self.configs.sy, self.configs.reflect_tipo)
         if transformacao_mode == 0: # translacao
             for i in range(len(self.points)):
-                self.points[i] = t.translate(self.points[i], 10, 10) #10 e 10 -> dx e dy
+                self.points[i] = t.translate(self.points[i], t.dx, t.dy) #10 e 10 -> dx e dy
         elif transformacao_mode == 1: # translacao
             for i in range(len(self.points)):
-                self.points[i] = t.rotate(self.points[i], 30) #30 -> angulo
-        elif transformacao_mode == 2: # translacao
+                self.points[i] = t.rotate(self.points[i], t.angle_degrees) #30 -> angulo
+        elif transformacao_mode == 2: # translacao  
             for i in range(len(self.points)):
-                self.points[i] = t.scale(self.points[i], 2, 2)
+                self.points[i] = t.scale(self.points[i], t.sx, t.sy)
         else:
-            for i in range(len(self.points)):
-                self.points[i] = t.reflect_xy(self.points[i])
+            if t.reflect_tipo == 0:
+                for i in range(len(self.points)):
+                    self.points[i] = t.reflect_x(self.points[i])
+            elif t.reflect_tipo == 1:
+                for i in range(len(self.points)):
+                    self.points[i] = t.reflect_y(self.points[i])
+            else:
+                for i in range(len(self.points)):
+                    self.points[i] = t.reflect_xy(self.points[i])
+
         self.canvas.delete("all")
         for p in self.points:
             draw.dda(self.canvas, p[0], p[1], p[2], p[3])
@@ -141,6 +156,66 @@ class PaintApp:
             # Log the coordinates of the selected area
             print(f"Selected area: ({self.start_x}, {self.start_y}) to ({end_x}, {end_y})")
             self.select_area = (self.start_x, self.start_y, end_x, end_y)
+
+    def create_config_window(self):
+        self.config_window = tk.Toplevel(self.root)
+        self.config_window.title("Configurações")
+
+        # Translação
+        tk.Label(self.config_window, text="Translação:").grid(row=0, columnspan=2, pady=5)
+        self.dx_entry = tk.Entry(self.config_window)
+        self.dx_entry.grid(row=1, column=0)
+        tk.Label(self.config_window, text="dx").grid(row=1, column=1)
+
+        self.dy_entry = tk.Entry(self.config_window)
+        self.dy_entry.grid(row=2, column=0)
+        tk.Label(self.config_window, text="dy").grid(row=2, column=1)
+
+        # Rotação
+        tk.Label(self.config_window, text="Rotação:").grid(row=3, columnspan=2, pady=5)
+        self.angle_entry = tk.Entry(self.config_window)
+        self.angle_entry.grid(row=4, column=0)
+        tk.Label(self.config_window, text="Ângulo (graus)").grid(row=4, column=1)
+
+        # Escala
+        tk.Label(self.config_window, text="Escala:").grid(row=5, columnspan=2, pady=5)
+        self.sx_entry = tk.Entry(self.config_window)
+        self.sx_entry.grid(row=6, column=0)
+        tk.Label(self.config_window, text="sx").grid(row=6, column=1)
+
+        self.sy_entry = tk.Entry(self.config_window)
+        self.sy_entry.grid(row=7, column=0)
+        tk.Label(self.config_window, text="sy").grid(row=7, column=1)
+
+        # Reflexão
+        tk.Label(self.config_window, text="Reflexão:").grid(row=8, columnspan=2, pady=5)
+
+        self.reflect_var = tk.IntVar()
+        tk.Radiobutton(self.config_window, text="Refletir em X", variable=self.reflect_var, value=0).grid(row=9, columnspan=2)
+        tk.Radiobutton(self.config_window, text="Refletir em Y", variable=self.reflect_var, value=1).grid(row=10, columnspan=2)
+        tk.Radiobutton(self.config_window, text="Refletir em XY", variable=self.reflect_var, value=2).grid(row=11, columnspan=2)
+
+        # Botão para aplicar transformações
+        tk.Button(self.config_window, text="Aplicar", command=self.save_config).grid(row=12, columnspan=2, pady=10)
+
+
+    def save_config(self):
+        # Atualiza a instância de TransformConfig com os valores das entradas
+        try:
+            dx = float(self.dx_entry.get())
+            dy = float(self.dy_entry.get())
+            angle = float(self.angle_entry.get())
+            sx = float(self.sx_entry.get())
+            sy = float(self.sy_entry.get())
+            reflection_type = self.reflect_var.get()
+
+            # Atualiza o objeto transform_config
+            self.configs = Transformacao(dx, dy, angle, sx, sy, reflection_type)
+            # Aqui você pode retornar o objeto de configuração se desejar
+            print("Configurações salvas:", self.configs)
+            self.config_window.destroy()  # Fechar a janela de configurações
+        except ValueError:
+            print("Por favor, insira valores válidos.")
 
 if __name__ == "__main__":
     root = tk.Tk()
