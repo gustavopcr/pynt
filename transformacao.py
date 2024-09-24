@@ -57,23 +57,27 @@ class Transformacao:
         # Transladar os pontos de volta ao local original
         return self.translate((new_x1, new_y1, new_x2, new_y2), cx, cy)
 
-
+    #self.canvas.winfo_width
+    #self.canvas.winfo_height
+    
     # Reflexão nos eixos X, Y ou XY
-    def reflect_x(self, p):
+    def reflect_x(self, canvas, p):
         x1, y1, x2, y2 = p
-        new_y1 = -y1
-        new_y2 = -y2
+        new_y1 = canvas.winfo_height() - y1
+        new_y2 = canvas.winfo_height() - y2
         return (x1, new_y1, x2, new_y2)
-
-    def reflect_y(self, p):
+    
+    def reflect_y(self, canvas, p):
         x1, y1, x2, y2 = p
-        new_x1 = -x1
-        new_x2 = -x2
+        new_x1 = canvas.winfo_width() - x1
+        new_x2 = canvas.winfo_width() - x2
         return (new_x1, y1, new_x2, y2)
 
-    def reflect_xy(self, p):
+    def reflect_xy(self, canvas, p):
         x1, y1, x2, y2 = p
-        new_x1, new_y1 = -x1, -y1
-        new_x2, new_y2 = -x2, -y2
+        new_x1 = canvas.winfo_width() - x1
+        new_y1 = canvas.winfo_height() - y1
+        new_x2 = canvas.winfo_width() - x2
+        new_y2 = canvas.winfo_height() - y2
         return (new_x1, new_y1, new_x2, new_y2)
 

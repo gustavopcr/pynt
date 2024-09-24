@@ -18,8 +18,6 @@ class PaintApp:
         self.config_button = tk.Button(root, text="Configurar Transformações", command=self.create_config_window)
         self.config_button.pack(pady=20)
 
-
-
         self.select_button = tk.Button(root, text="Select", command=self.activate_select)
         self.select_button.pack(side=tk.LEFT)
         
@@ -101,14 +99,13 @@ class PaintApp:
         else:
             if t.reflect_tipo == 0:
                 for i in range(len(self.points)):
-                    self.points[i] = t.reflect_x(self.points[i])
+                    self.points[i] = t.reflect_x(self.canvas, self.points[i])
             elif t.reflect_tipo == 1:
                 for i in range(len(self.points)):
-                    self.points[i] = t.reflect_y(self.points[i])
+                    self.points[i] = t.reflect_y(self.canvas, self.points[i])
             else:
                 for i in range(len(self.points)):
-                    self.points[i] = t.reflect_xy(self.points[i])
-
+                    self.points[i] = t.reflect_xy(self.canvas, self.points[i])
         self.canvas.delete("all")
         for p in self.points:
             draw.dda(self.canvas, p[0], p[1], p[2], p[3])
